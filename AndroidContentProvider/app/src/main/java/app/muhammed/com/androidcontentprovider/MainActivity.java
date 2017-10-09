@@ -1,13 +1,15 @@
 package app.muhammed.com.androidcontentprovider;
 
+import android.content.ContentUris;
+import android.content.ContentValues;
 import android.database.Cursor;
 import android.net.Uri;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
-import app.muhammed.com.androidcontentprovider.db.ContactModel;
 import app.muhammed.com.androidcontentprovider.db.MyContactProvider;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
@@ -25,29 +27,23 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mInsertButton.setOnClickListener(this);
 
 
-        String[] projection = {
 
-                "ID",
-                "NAME"
-        };
-
-        Cursor cursor = getContentResolver().query(Uri.withAppendedPath(MyContactProvider.CONTENT_AUTHORITY_URI, "CONTACT_MODEL/" + 1), projection, null, null, null);
-        if (cursor.moveToFirst()) {
-
-
-
-        }
     }
 
     @Override
     public void onClick(View view) {
-        ContactModel contactModel = new ContactModel();
 
-        contactModel.setName("Muhammed Thasneem");
-        contactModel.setPhone("8086461927");
-        contactModel.setEmail("muhammedthasneem@gmail.com");
-        contactModel.setAddress("Ernakulam");
 
-        contactModel.save();
+        ContentValues values = new ContentValues();
+
+        values.put("NAME", "Muhammed");
+        values.put("PHONE", "8086461927");
+        values.put("EMAIL", "muhammed.thasneem@yahoo.com");
+        values.put("ADDRESS", "Ernakulam");
+
+        Uri insert = getContentResolver().insert(Uri.withAppendedPath(MyContactProvider.CONTENT_AUTHORITY_URI, "CONTACT_MODEL"), values);
+
+        Toast.makeText(this, String.valueOf(ContentUris.parseId(insert)), Toast.LENGTH_SHORT).show();
+
     }
 }

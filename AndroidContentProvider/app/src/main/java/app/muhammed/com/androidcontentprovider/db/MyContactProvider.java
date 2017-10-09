@@ -5,6 +5,7 @@ import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.UriMatcher;
 import android.database.Cursor;
+import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.support.annotation.NonNull;
@@ -54,14 +55,14 @@ public class MyContactProvider extends ContentProvider {
 
         int match = uriMatcher.match(uri);
         SQLiteDatabase database = myDb.getReadableDatabase();
-        Cursor cursor = null;
+        Cursor cursor;
         switch (match) {
             case CONTACTS:
+                cursor = database.query("CONTACT_MODEL", projection, null, null, null, null, sortOrder);
                 break;
             case CONTACTS_ID:
 
                 selection = "ID=?";
-
                 selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
                 cursor = database.query("CONTACT_MODEL", projection, selection, selectionArgs, null, null, sortOrder);
 
@@ -81,7 +82,27 @@ public class MyContactProvider extends ContentProvider {
     @Nullable
     @Override
     public Uri insert(@NonNull Uri uri, @Nullable ContentValues contentValues) {
-        return null;
+
+        SQLiteDatabase database = myDb.getWritableDatabase();
+        int match = uriMatcher.match(uri);
+        switch (match) {
+            case CONTACTS:
+
+                long contact_model = database.insert("CONTACT_MODEL", null, contentValues);
+
+                if (contact_model > 0) {
+
+                    getContext().getContentResolver().notifyChange(uri,null);
+                    return ContentUris.withAppendedId(uri, contact_model);
+                } else {
+
+                    throw new SQLException("Insertion failed " + uri);
+                }
+
+
+            default:
+                throw new IllegalArgumentException("Uri not found " + uri);
+        }
     }
 
     @Override
