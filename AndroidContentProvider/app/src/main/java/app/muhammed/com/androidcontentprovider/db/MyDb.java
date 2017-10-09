@@ -10,12 +10,12 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 public class MyDb extends SQLiteOpenHelper {
     public MyDb(Context context) {
-        super(context, "contentprovider.db", null, 2);
+        super(context, MyDbContract.DB_NAME, null, MyDbContract.DB_VERSION);
     }
 
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
-
+        sqLiteDatabase.execSQL(MyDbContract.MyDBTable.CREATE_TABLE);
     }
 
     @Override

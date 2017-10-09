@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import app.muhammed.com.androidcontentprovider.R;
+import app.muhammed.com.androidcontentprovider.db.MyDbContract;
 
 /**
  * Created by Muhammed on 09/10/17.
@@ -31,8 +32,8 @@ public class MyCursorAdapter extends CursorAdapter {
         TextView nameTextView = view.findViewById(R.id.textView2);
         TextView idTextView = view.findViewById(R.id.textView3);
 
-        idTextView.setText("test");
-        nameTextView.setText("test");
+        idTextView.setText(cursor.getString(cursor.getColumnIndex(MyDbContract.MyDBTable.NAME)));
+        nameTextView.setText(cursor.getString(cursor.getColumnIndex(MyDbContract.MyDBTable.EMAIL)));
 
 
     }

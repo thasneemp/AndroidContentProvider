@@ -38,7 +38,7 @@
             android:authorities="app.muhammed.com.androidcontentprovider.db"
             android:exported="false" />
 
-        <!--<activity android:name=".MyListActivity"></activity>-->
+        <activity android:name=".MyListActivity"></activity>
     </application>
 
 </manifest>

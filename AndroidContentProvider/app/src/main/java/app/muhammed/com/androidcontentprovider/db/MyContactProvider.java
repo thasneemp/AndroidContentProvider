@@ -16,25 +16,15 @@ import android.support.annotation.Nullable;
  */
 
 public class MyContactProvider extends ContentProvider {
-
-
     public static final int CONTACTS = 101;
     public static final int CONTACTS_ID = 102;
 
-
-    private static final String CONTENT_STRING = "app.muhammed.com.androidcontentprovider.db";
-    public static final String CONTENT_AUTHORITY = "content://" + CONTENT_STRING;
-    public static final Uri CONTENT_AUTHORITY_URI = Uri.parse(CONTENT_AUTHORITY);
-
-    public static final Uri CONTACT_PATH = Uri.withAppendedPath(Uri.parse(CONTENT_AUTHORITY), "CONTACT_MODEL");
-
-    public static final Uri CONTACT_PATH_ID = Uri.withAppendedPath(Uri.parse(CONTENT_AUTHORITY), "CONTACT_MODEL/");
     private static final UriMatcher uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
 
     static {
 
-        uriMatcher.addURI(CONTENT_STRING, "CONTACT_MODEL", CONTACTS);
-        uriMatcher.addURI(CONTENT_STRING, "CONTACT_MODEL/#", CONTACTS_ID);
+        uriMatcher.addURI(MyDbContract.CONTENT_AUTHORITY, MyDbContract.MyDBTable.CONTACT_TABLE, CONTACTS);
+        uriMatcher.addURI(MyDbContract.CONTENT_AUTHORITY, MyDbContract.MyDBTable.CONTACT_TABLE + "/#", CONTACTS_ID);
 
     }
 
@@ -58,18 +48,17 @@ public class MyContactProvider extends ContentProvider {
         Cursor cursor;
         switch (match) {
             case CONTACTS:
-                cursor = database.query("CONTACT_MODEL", projection, null, null, null, null, sortOrder);
+                cursor = database.query(MyDbContract.MyDBTable.CONTACT_TABLE, projection, null, null, null, null, sortOrder);
                 break;
             case CONTACTS_ID:
-
-                selection = "ID=?";
+                selection = MyDbContract.MyDBTable.ID + "=?";
                 selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
-                cursor = database.query("CONTACT_MODEL", projection, selection, selectionArgs, null, null, sortOrder);
-
+                cursor = database.query(MyDbContract.MyDBTable.CONTACT_TABLE, projection, selection, selectionArgs, null, null, sortOrder);
                 break;
             default:
                 throw new IllegalArgumentException("Uri not found " + uri);
         }
+        cursor.setNotificationUri(getContext().getContentResolver(), uri);
         return cursor;
     }
 
@@ -82,17 +71,16 @@ public class MyContactProvider extends ContentProvider {
     @Nullable
     @Override
     public Uri insert(@NonNull Uri uri, @Nullable ContentValues contentValues) {
-
         SQLiteDatabase database = myDb.getWritableDatabase();
         int match = uriMatcher.match(uri);
         switch (match) {
             case CONTACTS:
 
-                long contact_model = database.insert("CONTACT_MODEL", null, contentValues);
+                long contact_model = database.insert(MyDbContract.MyDBTable.CONTACT_TABLE, null, contentValues);
 
                 if (contact_model > 0) {
 
-                    getContext().getContentResolver().notifyChange(uri,null);
+                    getContext().getContentResolver().notifyChange(uri, null);
                     return ContentUris.withAppendedId(uri, contact_model);
                 } else {
 
